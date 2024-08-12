@@ -23,7 +23,7 @@ class Boid {
     }
   }
 
-  alignOrCohere(flock, mode) {
+  ACS(flock, mode) {
     let perceptionRadius = 100;
     let steeringForce = createVector();
     let boidsInRadius = 0;
@@ -44,6 +44,12 @@ class Boid {
           // find average position to make boids travel towards center of flock
           steeringForce.add(other.position);
         }
+        if (mode === 'separate') {
+          // find average position to make boids travel away from each other
+          let diff = p5.Vector.sub(this.position, other.position);
+          diff.div(d); // weight by distance
+          steeringForce.add(diff);
+        }
       }
     }
 
@@ -61,10 +67,12 @@ class Boid {
   }
 
   flock(boids) {
-    let alignment = this.alignOrCohere(boids, 'align');
-    let cohesion = this.alignOrCohere(boids, 'cohere');
+    let alignment = this.ACS(boids, 'align');
+    let cohesion = this.ACS(boids, 'cohere');
+    let separation = this.ACS(boids, 'separate');
     this.acceleration.add(alignment);
     this.acceleration.add(cohesion);
+    this.acceleration.add(separation);
   }
 
   update() {
@@ -75,7 +83,7 @@ class Boid {
   }
 
   show() {
-    stroke(255);
+    stroke(0);
     strokeWeight(8);
     point(this.position.x, this.position.y);
   }
