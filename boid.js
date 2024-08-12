@@ -4,7 +4,7 @@ class Boid {
     this.velocity = p5.Vector.random2D();
     this.velocity.setMag(random(2, 4));
     this.acceleration = createVector();
-    this.maxForce = 0.2;
+    this.maxForce = 0.6;
     this.maxSpeed = 4;
   }
 
@@ -24,7 +24,7 @@ class Boid {
   }
 
   ACS(flock, mode) {
-    let perceptionRadius = 100;
+    let perceptionRadius = 50;
     let steeringForce = createVector();
     let boidsInRadius = 0;
     for (let other of flock) {
@@ -47,7 +47,7 @@ class Boid {
         if (mode === 'separate') {
           // find average position to make boids travel away from each other
           let diff = p5.Vector.sub(this.position, other.position);
-          diff.div(d); // weight by distance
+          diff.div(d); // weight by inverse of distance
           steeringForce.add(diff);
         }
       }
@@ -83,8 +83,17 @@ class Boid {
   }
 
   show() {
-    stroke(0);
-    strokeWeight(8);
-    point(this.position.x, this.position.y);
+    let theta = this.velocity.heading() + radians(90); // Offset by 90 degrees to point the triangle's tip forward
+    fill(127);
+    stroke(200);
+    push();
+    translate(this.position.x, this.position.y);
+    rotate(theta);
+    beginShape();
+    vertex(0, -20);
+    vertex(-10, 10);
+    vertex(10, 10);
+    endShape(CLOSE);
+    pop();
   }
 }
